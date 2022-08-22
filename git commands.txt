@@ -1,0 +1,48 @@
+git - distributed version control tool
+----
+
+------------------------------------
+
+local - without internet connection
+
+git init - one time activity for given git repo (to initialize empty git repo)
+
+
+working area  - new file               (untracked)
+staging area  - git add <filename>     add file to local git repo
+git repo      - git commit <filename>  commit file to local git repo
+
+-------------------------------------------
+push to remote repo - internet connection
+git push <file-name> 
+=====================================================
+
+
+
+git init
+git status
+git add <filename>
+git status
+git commit -m "some message"
+git status
+
+
+git log 
+
+git push
+
+git status
+===========================================================
+branching
+-----------
+git branch test - to create a new branch named "test"
+git branch - to check the default branch
+git checkout test - to switch to test branch
+git push -u origin test
+
+---------------------------------------------------
+merging
+--------
+Switch to the target branch and run
+git merge <source branch name>
+
