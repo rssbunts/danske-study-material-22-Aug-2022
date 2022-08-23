@@ -1,0 +1,41 @@
+Azure VM setup
+
+OS - Windows 10 pro or Linux
+Size - Standard D2s v3 (2 vcpus, 8 GiB memory)
+
+
+Pre-requisites
+download vs code for windows 10
+install git
+install python (say 3.10.4)
+Open VS code and install VS Code Python extension - Python for VS code  (for winfows only)
+install docker
+
+
+# open terminal
+py --version
+-----------------------------------------------------
+apt-get install azure-cli -y           # if not installed. or install using gui for windows.
+az login
+az account show			# show default subs
+az account list 			# show all subs
+az account set --subscription be40f85a-7ca1-48fb-bfb5-11fe1320e9a8        # change subs
+az account show      # verify default subs changed
+=================================================
+
+
+
+
+
+
+sudo su -
+apt-get update
+git --version
+apt-get install python3.8     # python 3.8.10 should already be installed on your ubuntu VM
+python3 --version
+apt-get install docker.io
+docker --version
+apt-get install docker-compose
+docker-compose --version
+apt-get install azure-cli
+az --version
