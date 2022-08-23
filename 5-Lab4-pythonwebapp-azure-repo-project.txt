@@ -1,0 +1,85 @@
+# Lab 4 : Azure repo - setup Azure DevOps pipeline using azure repo
+
+https://github.com/puneetbhatia77/pythonwebapp
+
+PS C:\azure-devops>git clone https://github.com/puneetbhatia77/pythonwebapp pythonwebapp-azure-repo
+PS C:\azure-devops>cd pythonwebapp-azure-repo           # delete .git and .github folders if any
+
+==========================================================================
+# build code on linux env.danske
+
+apt install python3-virtualenv   # in case python3-virtualenv not installed
+virtualenv --python python3.8 venv
+source venv/bin/activate
+pip install -r requirements.txt
+export FLASK_APP="app.py"
+python3 -m flask run &
+curl  http://127.0.0.1:5000
+---------------------------------------
+# In case you are working on windows env
+
+PS C:\azure-devops\pythonwebapp-azure-repo> py -m venv venv
+PS C:\azure-devops\pythonwebapp-azure-repo> .\venv\Scripts\Activate.ps1
+(venv) PS C:\azure-devops\pythonwebapp-azure-repo> pip install -r requirements.txt
+(venv) PS C:\azure-devops\pythonwebapp-azure-repo> $env:FLASK_APP = "app.py"
+(venv) PS C:\azure-devops\pythonwebapp-azure-repo> python -m flask run
+  * Serving Flask app 'app.py' 
+  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+=============================================================================
+
+# run below commands to create web app
+
+#create web app
+az group create --name pythonwebapp3rg --location westus
+az appservice plan create --resource-group pythonwebapp3rg --name pythonwebappplan3 --is-linux --sku B1
+
+[ if error
+apt install python3-pip -y
+sudo /usr/bin/pip3 install --system decorator
+]
+
+az webapp create --resource-group pythonwebapp3rg --plan pythonwebappplan3 --name pythonwebapp3amit --runtime "Python|3.8"
+# for windows cli, use --runtime "Python:3.8"
+
+
+# Create the Azure DevOps Project "danske-pythonwebapp-azure-repo-project" and connect to the App service instance
+# goto repos -> Push an existing repository from command line and copy git remote origin commands in notepad
+
+   # for example
+   git remote add origin https://puneetbhatia77@dev.azure.com/puneetbhatia77/ danske-pythonwebapp-azure-repo-project/_git/ danske-pythonwebapp-azure-repo-project
+   git push -u origin --all
+
+change "Azure Webapps" with " danske Practices" and "A Simple Pyton Web App" with "A Simple Pyton Web App - Azure repo" in templates\index.html 
+git init
+git add
+git commit 
+git remote add origin https://puneetbhatia77@dev.azure.com/puneetbhatia77/ danske-pythonwebapp-azure-repo-project/_git/ danske-pythonwebapp-azure-repo-project
+git push -u origin --all              # generate personal access token : dev.azure.com -> user settings -> personal access tokens -> New token
+
+# refresh azure repo
+
+
+# create  pipeline (delete azure-pipeline.yml first if already exists)
+
+# pipeline 1  
+pipeline -> create pipeline -> select "azure repo git" option -> select repo name "danske-pythonwebapp" -> Configure your pipeline -> python package 
+# keep only python 3.7 and delete pytest
+-> save and run
+#rename to build-piepeline
+
+#pipeline 2 (make sure you have created web app with python runtime)
+pipeline -> create pipeline -> select "azure repo git" option -> select repo name "danske-pythonwebapp" -> Configure your pipeline -> python to linux web app on azure -> select subscription and web app -> save and run
+
+# verify web app is deployed.
+# make change in source code in github say at  danske-pythonwebapp/templates/index.html, both the pipelines will be auto-triggered.
+# verify web app for changes deployed.
+
+===================
+
+Pull request
+--------------
+
+Set master branch policy
+modify "azure-pipelines.yml" for trigger branch and commit as a new branch say "test" and rename pipeline name as "test-pipeline"
+Attach it to a new task in JIRA board
+goto azure repo and make changes in templates/index.html at test branch 
