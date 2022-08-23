@@ -1,0 +1,74 @@
+# Lab 2 : Azure repo - setup Azure DevOps pipeline using github
+
+https://github.com/puneetbhatia77/pythonwebapp
+
+PS C:\azure-devops>git clone https://github.com/puneetbhatia77/pythonwebapp
+PS C:\azure-devops>cd pythonwebapp             # delete .git and .github folders if any
+
+==========================================================================
+# build code on linux env.
+
+apt install python3-virtualenv   # in case python3-virtualenv not installed
+virtualenv --python python3.8 venv
+source venv/bin/activate
+pip install -r requirements.txt
+export FLASK_APP="app.py"
+python3 -m flask run &
+curl  http://127.0.0.1:5000
+---------------------------------------
+# In case you are working on windows env
+
+PS C:\azure-devops\pythonwebapp> py -m venv venv
+PS C:\azure-devops\pythonwebapp> .\venv\Scripts\Activate.ps1
+(venv) PS C:\azure-devops\pythonwebapp> pip install -r requirements.txt
+(venv) PS C:\azure-devops\pythonwebapp> $env:FLASK_APP = "app.py"
+(venv) PS C:\azure-devops\pythonwebapp> python -m flask run
+  * Serving Flask app 'app.py' 
+  * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+=============================================================================
+
+change "Azure Webapps" with "Danske" in templates\templates.html 
+git init
+git add
+git commit 
+git add remote origin                    # create danske-pythonwebapp
+git push
+
+
+
+# Open command window and run below commands to create web app
+
+#create web app
+az group create --name pythonwebapp2rg --location westus
+az appservice plan create --resource-group pythonwebapp2rg --name pythonwebappplan2 --is-linux --sku B1
+
+[ if error
+apt install python3-pip -y
+sudo /usr/bin/pip3 install --system decorator
+]
+
+az webapp create --resource-group pythonwebapp2rg --plan pythonwebappplan2 --name pythonwebapp2amit --runtime "Python|3.8"
+# for windows cli, use --runtime "Python:3.8"
+
+
+
+
+# Create the Azure DevOps Project "danske-pythonwebapp-github-project" and connect to the App service instance
+
+
+
+# create  pipeline (delete azure-pipeline.yml first if already exists)
+
+# pipeline 1  
+pipeline -> create pipeline -> select "github" option -> select repo name "danske-pythonwebapp" -> Configure your pipeline -> python package 
+# keep only python 3.7 and delete pytest
+-> save and run
+#rename to build-piepeline
+
+#pipeline 2 (make sure you have created web app with python runtime)
+pipeline -> create pipeline -> select "github" option -> select repo name "danske-pythonwebapp" -> Configure your pipeline -> python to linux web app on azure -> select subscription and web app -> save and run
+
+
+# verify web app is deployed.
+# make change in source code in github say at danske-pythonwebapp/templates/templates.html, both the pipelines will be auto-triggered.
+# verify web app for changes deployed.
