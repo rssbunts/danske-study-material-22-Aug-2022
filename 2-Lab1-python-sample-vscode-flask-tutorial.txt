@@ -1,0 +1,55 @@
+# Lab 1 : Build Python flask code locally and deploy to webapp using cli manually.
+
+https://github.com/Microsoft/python-sample-vscode-flask-tutorial
+
+# login to linux VM
+
+mkdir azure-devops
+cd azure-devops
+git clone https://github.com/Microsoft/python-sample-vscode-flask-tutorial
+cd python-sample-vscode-flask-tutorial
+==========================================================================
+# build code on linux env.
+
+apt install python3-virtualenv
+virtualenv --python python3.8 venv
+source venv/bin/activate
+pip install -r requirements.txt
+export FLASK_APP="hello_app.webapp"
+python3 -m flask run &
+curl  http://127.0.0.1:5000
+---------------------------------------
+# In case you are working on windows env
+
+PS C:\azure-devops\python-sample-vscode-flask-tutorial> py -m venv venv
+PS C:\azure-devops\python-sample-vscode-flask-tutorial> .\venv\Scripts\Activate.ps1
+(venv) PS C:\azure-devops\python-sample-vscode-flask-tutorial> pip install -r requirements.txt
+(venv) PS C:\azure-devops\python-sample-vscode-flask-tutorial> $env:FLASK_APP = "hello_app.webapp"
+(venv) PS C:\azure-devops\python-sample-vscode-flask-tutorial> python -m flask run
+
+Goto browser and run "http://127.0.0.1:5000" or open terminal and run "curl  http://127.0.0.1:5000"
+============================================================================
+
+
+
+
+#create web app
+az group create --name pythonwebapprg --location westus
+az appservice plan create --resource-group pythonwebapprg --name pythonwebappplan --is-linux --sku B1
+
+[ if error
+apt install python3-pip -y
+sudo /usr/bin/pip3 install --system decorator
+]
+
+az webapp create --resource-group pythonwebapprg --plan pythonwebappplan --name pythonwebappamit1 --runtime "Python|3.8"
+# for windows cli or Powershell, use --runtime "Python:3.8"
+
+#manual deployment to web app
+az webapp up -n <your-appservice>          #will create new webapp
+az webapp config set -g <your-resource-group> -n <your-appservice> --startup-file <your-startup-file-or-command>
+
+eg.
+az webapp up -n pythonwebappamit1
+az webapp config set -g pythonwebapprg -n pythonwebappamit1 --startup-file startup.txt
+
