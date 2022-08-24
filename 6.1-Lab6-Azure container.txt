@@ -1,0 +1,120 @@
+# Container - quick start
+
+# Portal - create acr and quickstart
+
+-------------------------------------
+-------------------------------------
+# Advanced container concepts
+------------------------------
+# Install Docker on linux
+
+sudo su -
+apt-get update
+apt-get install docker.io -y
+---------------------------
+
+
+# Lab 5 - to build app and deploy using container
+-----------------------------------------------
+# webapp name     :  mywebapppuneet 
+# registory name  :  mydockerapppuneetacr
+
+
+docker --version
+git clone https://github.com/<gitrepo name>/docker-django-webapp-linux.git --config core.autocrlf=input
+# git clone https://github.com/puneetbhatia77/docker-django-webapp-linux.git --config core.autocrlf=input
+# delete .git and .github folders if any
+cd docker-django-webapp-linux
+docker build --tag appsvc-tutorial-custom-image .
+docker run -it -p 8000:8000 appsvc-tutorial-custom-image
+
+#create fusion-docker-django-webapp-linux repo in github and push the code.
+----------------------------------------------
+apt install azure-cli -y   # install azure-cli if not installed.     
+az login
+az account show			# show default subs
+az account list 			# show all subs
+az account set --subscription be40f85a-7ca1-48fb-bfb5-11fe1320e9a8        # switch to other subscription in case you have multiple subscription
+az account show      # verify default subs changed
+---------------------------------------------------
+az group create --name myResourceGroup --location westeurope
+az acr create --name mydockerapppuneetacr --resource-group myResourceGroup --sku Basic --admin-enabled true
+az acr credential show --resource-group myResourceGroup --name mydockerapppuneetacr
+
+docker login mydockerapppuneetacr.azurecr.io --username mydockerapppuneetacr
+docker tag appsvc-tutorial-custom-image mydockerapppuneetacr.azurecr.io/appsvc-tutorial-custom-image:latest
+docker push mydockerapppuneetacr.azurecr.io/appsvc-tutorial-custom-image:latest
+az acr repository list -n mydockerapppuneetacr
+
+
+
+az appservice plan create --name myAppServicePlan --resource-group myResourceGroup --is-linux
+[ if error
+apt install python3-pip -y
+
+sudo /usr/bin/pip3 install --system decorator
+]
+
+
+az webapp create --resource-group myResourceGroup --plan myAppServicePlan --name mywebapppuneet --deployment-container-image-name mydockerapppuneetacr.azurecr.io/appsvc-tutorial-custom-image:latest
+az webapp config appsettings set --resource-group myResourceGroup --name mywebapppuneet --settings WEBSITES_PORT=8000
+az webapp identity assign --resource-group myResourceGroup --name mywebapppuneet --query principalId --output tsv
+az account show --query id --output tsv
+
+az role assignment create --assignee 08b7b4d2-dae3-4e61-b199-742d428252b3 --scope /subscriptions/be40f85a-7ca1-48fb-bfb5-11fe1320e9a8/resourceGroups/myResourceGroup/providers/Microsoft.ContainerRegistry/registries/mydockerapppuneetacr --role "AcrPull"
+
+
+az resource update --ids /subscriptions/be40f85a-7ca1-48fb-bfb5-11fe1320e9a8/resourceGroups/myResourceGroup/providers/Microsoft.Web/sites/mywebapppuneet/config/web --set properties.acrUseManagedIdentityCreds=True
+
+az webapp config container set --name mywebapppuneet --resource-group myResourceGroup --docker-custom-image-name mydockerapppuneetacr.azurecr.io/appsvc-tutorial-custom-image:latest --docker-registry-server-url https://mydockerapppuneetacr.azurecr.io
+
+
+az webapp log config --name mywebapppuneet --resource-group myResourceGroup --docker-container-logging filesystem
+az webapp log tail --name mywebapppuneet --resource-group myResourceGroup
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=========================================
+
+
+
+az webapp deployment container config --enable-cd true --name mywebapppuneet --resource-group myResourceGroup --query CI_CD_URL --output tsv
+
+az acr webhook create --name appserviceCD --registry mydockerapppuneetacr --uri "https://$mywebapppuneet:Sj6evqLbon5Edgnkw5q8kMCAkQ7qereireFoy03xRxnFPHNjo17utdBkvDPk@mywebapppuneet.scm.azurewebsites.net/docker/hook" --actions push --scope appsvc-tutorial-custom-image:latest
+
+
+eventId=$(az acr webhook ping --name appserviceCD --registry mydockerapppuneetacr --query id --output tsv)
+az acr webhook list-events --name appserviceCD --registry mydockerapppuneetacr --query "[?id=='$eventId'].eventResponseMessage"
+
+
+az acr webhook ping --name appserviceCD --registry mydockerapppuneetacr --query id --output tsv
+<it will return event id say 1234>
+az acr webhook list-events --name appserviceCD --registry mydockerapppuneetacr --query "[?id=='9f836825-3fc3-40f6-bb14-9c67b081b720'].eventResponseMessage"
+
+
+
+# Modify app/templates/app/index.html
+
+docker build --tag appsvc-tutorial-custom-image .
+docker tag appsvc-tutorial-custom-image mydockerapppuneetacr.azurecr.io/appsvc-tutorial-custom-image:latest
+docker push mydockerapppuneetacr.azurecr.io/appsvc-tutorial-custom-image:latest
+
+
+
+
+
